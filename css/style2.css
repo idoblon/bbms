@@ -1,0 +1,14 @@
+body{
+    background-color: #fc8e8e;
+    background-image: linear-gradient(62deg, #fc8e8e 0%, #fcc5c3 100%);
+}
+
+.mytitle{
+    color: brown;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+
+.mycards{
+    margin: 10px;
+}
