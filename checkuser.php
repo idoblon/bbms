@@ -18,7 +18,7 @@ $password = $_POST['password'];
 
 // fetching every data from the memners where email is from user input email
 $query = "SELECT * FROM members WHERE email = '$email'";
-$result = mysqli_query($mysqli, $query) or die(mysqli_error());
+$result = mysqli_query($mysqli, $query) or die($mysqli_error());
 $num_row = mysqli_num_rows($result);
 $row = mysqli_fetch_array($result);
 
