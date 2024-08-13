@@ -143,7 +143,7 @@ $result = $mysqli->query($sql);
                         <tr>
                             <td><?php echo $row["stock_id"]; ?></td>
                             <td><?php echo $row["bloodgroup"]; ?></td>
-                            <td><?php echo $row["stock"]; ?></td>
+                            <td><?php echo $row["unit"]; ?></td>
                             <!-- update the stock if user / admin click on update  -->
                             <td><a class="btn btn-primary rounded-pill" href="updatestock.php?stock_id=<?php echo $row["stock_id"] ?>">Update</a></td>
                         </tr>

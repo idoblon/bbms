@@ -22,7 +22,7 @@ if (isset($_SESSION['login'])) {
     }
 
     // SQL query to calculate total stock
-    $sqlStock = "SELECT SUM(stock) AS total_stock FROM stock";
+    $sqlStock = "SELECT SUM(unit) AS total_stock FROM stock";
 
     // Execute SQL query for total stock
     $resultStock = $conn->query($sqlStock);
@@ -52,7 +52,7 @@ if (isset($_SESSION['login'])) {
     }
 
     // SQL query to calculate total requests
-    $sqlRequests = "SELECT COUNT(*) AS total_requests FROM request";
+    $sqlRequests = "SELECT COUNT(*) AS total_requests FROM blood_requests";
 
     // Execute SQL query for total requests
     $resultRequests = $conn->query($sqlRequests);

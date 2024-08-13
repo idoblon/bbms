@@ -25,7 +25,7 @@ $row = mysqli_fetch_array($result);
 // conditon checking if the data is fouund or not 
 if ($num_row >= 1) {
     if (password_verify($password, $row['password'])) {
-        $_SESSION['login'] = $row['id'];
+        $_SESSION['login'] = $row['mem_id'];
         $_SESSION['fname'] = $row['fname'];
         $_SESSION['lname'] = $row['lname'];
         $_SESSION['email'] = $row['email'];

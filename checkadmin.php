@@ -39,7 +39,7 @@ if ($result->num_rows > 0) {
     }
 } else {
     // User not found
-    echo 'false';
+    echo $error;
 }
 
 $stmt->close();

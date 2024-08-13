@@ -18,7 +18,7 @@ if (isset($_SESSION['login'])) {
     $lname = $_SESSION['lname'];
     $email = $_SESSION['email'];
 
-    $sql = "SELECT * FROM request where received = 0";
+    $sql = "SELECT * FROM blood_requests where received = 0";
     $result = $mysqli->query($sql);
 
 ?>
