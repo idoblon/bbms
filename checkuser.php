@@ -1,37 +1,34 @@
 <?php
+
 session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "blood-bank";
 
-// Create connection
+// create connection
 $mysqli = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
+if (!$mysqli) {
+    die("Connection  failed: " . mysqli_connect_error());
 }
-
-// Get user input
+// target the di/name from input section
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-// Prepare and execute query
-$query = "SELECT mem_id, fname, lname, email, password FROM members WHERE email = ?";
-$stmt = $mysqli->prepare($query);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->bind_result($mem_id, $fname, $lname, $email, $hashed_password);
-$stmt->fetch();
+// fetching every data from the memners where email is from user input email
+$query = "SELECT * FROM members WHERE email = '$email'";
+$result = mysqli_query($mysqli, $query) or die(mysqli_error());
+$num_row = mysqli_num_rows($result);
+$row = mysqli_fetch_array($result);
 
-// Check if user exists and verify password
-if ($mem_id) {
-    if (password_verify($password, $hashed_password)) {
-        $_SESSION['login'] = $mem_id;
-        $_SESSION['fname'] = $fname;
-        $_SESSION['lname'] = $lname;
-        $_SESSION['email'] = $email;
+// conditon checking if the data is fouund or not 
+if ($num_row >= 1) {
+    if (password_verify($password, $row['password'])) {
+        $_SESSION['login'] = $row['id'];
+        $_SESSION['fname'] = $row['fname'];
+        $_SESSION['lname'] = $row['lname'];
+        $_SESSION['email'] = $row['email'];
 
         echo 'true';
     } else {
@@ -40,8 +37,3 @@ if ($mem_id) {
 } else {
     echo 'false';
 }
-
-// Close statement and connection
-$stmt->close();
-$mysqli->close();
-?>
