@@ -319,7 +319,6 @@ if (isset($_SESSION['login'])) {
                     if ($row['received'] == 1) {
                         echo "<tr><td colspan='5' class='success'>Our team will contact you soon.</td></tr>";
                     }
-            
                     echo "</tr>";
                 }
                 echo "</tbody>";
