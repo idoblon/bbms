@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Aug 12, 2024 at 11:30 AM
+-- Host: localhost
+-- Generation Time: Aug 14, 2024 at 03:05 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -137,6 +137,33 @@ INSERT INTO `members` (`mem_id`, `fname`, `lname`, `email`, `password`, `req_uni
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `request`
+--
+
+CREATE TABLE `request` (
+  `req_id` int(11) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  `bloodgroup` varchar(20) NOT NULL,
+  `mobile_no` varchar(15) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `received` tinyint(1) DEFAULT 0,
+  `requested_amount` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `request`
+--
+
+INSERT INTO `request` (`req_id`, `name`, `bloodgroup`, `mobile_no`, `email`, `received`, `requested_amount`) VALUES
+(3, 'Kiran', 'A positive', '1234567890', '', 0, 0.00),
+(4, 'Kiran', 'O negative', '1234567890', '', 0, 0.00),
+(6, 'Aniket Pawar', 'AB positive', '1234456789', '', 0, 0.00),
+(8, 'bishwa', 'A positive', '9876543211', 's@gmail.com', 1, 2.00),
+(9, 'Bishwa', 'A positive', '9862531293', 's@gmail.com', 0, 2.00);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `stock`
 --
 
@@ -152,7 +179,7 @@ CREATE TABLE `stock` (
 --
 
 INSERT INTO `stock` (`stock_id`, `bloodgroup`, `unit`, `admin_id`) VALUES
-(1, 'A positive', 30, 1),
+(1, 'A positive', 32, 1),
 (2, 'A negative', 30, 1),
 (3, 'B positive', 49, 1),
 (4, 'B negative', 35, 1),
@@ -194,6 +221,12 @@ ALTER TABLE `members`
   ADD KEY `fk_members_admins` (`admin_id`);
 
 --
+-- Indexes for table `request`
+--
+ALTER TABLE `request`
+  ADD PRIMARY KEY (`req_id`);
+
+--
 -- Indexes for table `stock`
 --
 ALTER TABLE `stock`
@@ -227,6 +260,12 @@ ALTER TABLE `donors`
 --
 ALTER TABLE `members`
   MODIFY `mem_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `request`
+--
+ALTER TABLE `request`
+  MODIFY `req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `stock`

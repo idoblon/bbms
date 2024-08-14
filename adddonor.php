@@ -30,12 +30,13 @@ if (strlen($donor_name) < 2) {
 } elseif (strlen($mobile_no) < 10) {
     echo 'mob';
 } else {
+    
     // SQL to insert values
     $query = "INSERT INTO donors(donor_name, mobile_no, bloodgroup, age, gender, city, address) 
               VALUES ('$donor_name','$mobile_no','$bloodgroup','$age','$gender','$city','$address')";
 
     // SQL to update stock
-    $sql = "UPDATE stock SET stock = stock + 1 WHERE bloodgroup = '$bloodgroup'";
+    $sql = "UPDATE stock SET unit = unit + 1 WHERE bloodgroup = '$bloodgroup'";
 
     // Execute queries
     $insert_row = $mysqli->query($query);
@@ -44,7 +45,11 @@ if (strlen($donor_name) < 2) {
     if ($insert_row && $update_stock) {
         echo "true";
     } else {
-        echo "false";
+        if (!$insert_row) {
+            echo "Error with INSERT query: " . $mysqli->error;
+        } elseif (!$update_stock) {
+            echo "Error with UPDATE query: " . $mysqli->error;
+        }
     }
 }
 

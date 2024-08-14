@@ -220,14 +220,14 @@ if (isset($_SESSION['login'])) {
                             <div class="form-group col-md-6">
                                 <select id="bloodgroup" name="bloodgroup" class="form-control">
                                     <option selected>Choose...</option>
-                                    <option value="A ve">A+</option>
-                                    <option value="A -ve">A-</option>
-                                    <option value="B ve">B+</option>
-                                    <option value="B -ve">B-</option>
-                                    <option value="AB ve">O+</option>
-                                    <option value="AB -ve">O-</option>
-                                    <option value="O ve">AB+</option>
-                                    <option value="O -ve">AB-</option>
+                                    <option value="A positive">A+</option>
+                                    <option value="A negative">A-</option>
+                                    <option value="B positive">B+</option>
+                                    <option value="B negative">B-</option>
+                                    <option value="AB positive">O+</option>
+                                    <option value="AB negative">O-</option>
+                                    <option value="O positive">AB+</option>
+                                    <option value="O negative">AB-</option>
                                 </select>
                             </div>
 
