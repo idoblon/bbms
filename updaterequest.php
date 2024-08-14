@@ -24,7 +24,7 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $email = $row["email"];
     // Update stock table: decrease stock for the given blood group
-    $sql = "UPDATE stock SET stock = stock - 1 WHERE bloodgroup = '$bloodgroup'";
+    $sql = "UPDATE stock SET unit = unit - 1 WHERE bloodgroup = '$bloodgroup'";
     // Execute the stock update query
     if ($conn->query($sql) === TRUE) {
         $sql2 = "UPDATE request SET received = 1 WHERE req_id = '$req_id' AND email = '$email'";

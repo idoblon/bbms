@@ -18,7 +18,7 @@ if (isset($_SESSION['login'])) {
     $lname = $_SESSION['lname'];
     $email = $_SESSION['email'];
 
-    $sql = "SELECT * FROM blood_requests where received = 0";
+    $sql = "SELECT * FROM request where received = 0";
     $result = $mysqli->query($sql);
 
 ?>
@@ -123,6 +123,7 @@ if (isset($_SESSION['login'])) {
                         <th>Requester's Name</th>
                         <th>Mobile Number</th>
                         <th>Blood Group </th>
+                        <th>Amount(Pint)</th>
                         <th>Action </th>
                         </tr>
                         </thead>";
@@ -133,6 +134,7 @@ if (isset($_SESSION['login'])) {
                                 <td><?php echo $row["name"]; ?></td>
                                 <td><?php echo $row["mobile_no"]; ?></td>
                                 <td><?php echo $row["bloodgroup"]; ?></td>
+                                <td><?php echo $row["requested_amount"]; ?></td>
                                 <td><a class="btn btn-success rounded-pill" href="updaterequest.php?req_id=<?php echo $row["req_id"] ?>&bloodgroup=<?php echo $row["bloodgroup"] ?>">Accept</a></td>
                             </tr>
 
