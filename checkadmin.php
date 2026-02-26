@@ -12,12 +12,12 @@ if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-// Sanitize user input
-$email = $mysqli->real_escape_string($_POST['email']);
-$password = $mysqli->real_escape_string($_POST['password']);
+// Get user input
+$email = $_POST['email'] ?? '';
+$input_password = $_POST['password'] ?? '';
 
 // Prepare and execute SQL statement
-$query = "SELECT * FROM admins WHERE email = ?";
+$query = "SELECT admin_id, fname, lname, password FROM admins WHERE email = ?";
 $stmt = $mysqli->prepare($query);
 $stmt->bind_param("s", $email);
 $stmt->execute();
@@ -26,20 +26,17 @@ $result = $stmt->get_result();
 // Check if user exists
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    // Compare plain text passwords
-    if ($password === $row['password']) {
-        // Password is correct
+    // Verify password (supports both hashed and plain text for migration)
+    if (password_verify($input_password, $row['password']) || $input_password === $row['password']) {
         $_SESSION['login'] = $row['admin_id'];
         $_SESSION['fname'] = $row['fname'];
         $_SESSION['lname'] = $row['lname'];
         echo 'true';
     } else {
-        // Incorrect password
         echo 'false';
     }
 } else {
-    // User not found
-    echo $error;
+    echo 'false';
 }
 
 $stmt->close();
