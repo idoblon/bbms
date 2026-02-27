@@ -11,16 +11,18 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// getting the domor_id from url name donor_id 
-$donor_id = $_GET["donor_id"];
+// getting the donor_id from url
+$donor_id = $_GET["donor_id"] ?? '';
 
-// sql to delete a record
-$sql = "DELETE FROM donors WHERE donor_id='$donor_id'";
+// Prepare statement to delete record
+$stmt = $conn->prepare("DELETE FROM donors WHERE donor_id = ?");
+$stmt->bind_param("i", $donor_id);
 
-if ($conn->query($sql) === TRUE) {
+if ($stmt->execute()) {
     echo "Record deleted successfully";
 } else {
     echo "Error deleting record: " . $conn->error;
 }
 
+$stmt->close();
 $conn->close();

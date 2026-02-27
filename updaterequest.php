@@ -11,36 +11,48 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-$req_id = $_GET["req_id"];
-$bloodgroup = $_GET["bloodgroup"];
 
-// Retrieve the email associated with the req_id
-$sql_email = "SELECT email FROM request WHERE req_id = '$req_id'";
-$result = $conn->query($sql_email);
+$req_id = $_GET["req_id"] ?? '';
+$bloodgroup = $_GET["bloodgroup"] ?? '';
 
+// Begin transaction
+$conn->begin_transaction();
 
-if ($result->num_rows > 0) {
-    // Fetch the email from the result
-    $row = $result->fetch_assoc();
-    $email = $row["email"];
-    // Update stock table: decrease stock for the given blood group
-    $sql = "UPDATE stock SET unit = unit - 1 WHERE bloodgroup = '$bloodgroup'";
-    // Execute the stock update query
-    if ($conn->query($sql) === TRUE) {
-        $sql2 = "UPDATE request SET received = 1 WHERE req_id = '$req_id' AND email = '$email'";
-        if ($conn->query($sql2) === TRUE) {
-            echo "Successfully accepted and updated stock.";
-            // Redirect to adminhome.php
-            header("Location: adminhome.php");
-            exit(); // Ensure script stops executing after redirection
-        } else {
-            echo "Error updating record: " . $conn->error;
-        }
+try {
+    // Retrieve the email associated with the req_id
+    $stmt1 = $conn->prepare("SELECT email FROM request WHERE req_id = ?");
+    $stmt1->bind_param("i", $req_id);
+    $stmt1->execute();
+    $result = $stmt1->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $email = $row["email"];
+        $stmt1->close();
+
+        // Update stock table: decrease stock for the given blood group
+        $stmt2 = $conn->prepare("UPDATE stock SET unit = unit - 1 WHERE bloodgroup = ?");
+        $stmt2->bind_param("s", $bloodgroup);
+        $stmt2->execute();
+        $stmt2->close();
+
+        // Update request table: mark as received
+        $stmt3 = $conn->prepare("UPDATE request SET received = 1 WHERE req_id = ? AND email = ?");
+        $stmt3->bind_param("is", $req_id, $email);
+        $stmt3->execute();
+        $stmt3->close();
+
+        // Commit transaction
+        $conn->commit();
+        header("Location: adminhome.php");
+        exit;
     } else {
-        echo "Error updating stock: " . $conn->error;
+        throw new Exception("No record found with the given req_id.");
     }
-} else {
-    echo "Error: No record found with the given req_id.";
+} catch (Exception $e) {
+    // Rollback on error
+    $conn->rollback();
+    echo "Error: " . $e->getMessage();
 }
 
 $conn->close();

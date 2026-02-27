@@ -130,12 +130,12 @@ if (isset($_SESSION['login'])) {
                         while ($row = $result->fetch_assoc()) {
                     ?>
                             <tr>
-                                <td><?php echo $row["req_id"]; ?></td>
-                                <td><?php echo $row["name"]; ?></td>
-                                <td><?php echo $row["mobile_no"]; ?></td>
-                                <td><?php echo $row["bloodgroup"]; ?></td>
-                                <td><?php echo $row["requested_amount"]; ?></td>
-                                <td><a class="btn btn-success rounded-pill" href="updaterequest.php?req_id=<?php echo $row["req_id"] ?>&bloodgroup=<?php echo $row["bloodgroup"] ?>">Accept</a></td>
+                                <td><?php echo htmlspecialchars($row["req_id"]); ?></td>
+                                <td><?php echo htmlspecialchars($row["name"]); ?></td>
+                                <td><?php echo htmlspecialchars($row["mobile_no"]); ?></td>
+                                <td><?php echo htmlspecialchars($row["bloodgroup"]); ?></td>
+                                <td><?php echo htmlspecialchars($row["requested_amount"]); ?></td>
+                                <td><a class="btn btn-success rounded-pill" href="updaterequest.php?req_id=<?php echo urlencode($row["req_id"]) ?>&bloodgroup=<?php echo urlencode($row["bloodgroup"]) ?>">Accept</a></td>
                             </tr>
 
                         <?php

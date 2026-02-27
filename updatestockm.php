@@ -12,32 +12,24 @@ if ($mysqli->connect_error) {
 
 // Check if the required POST variables are set
 if (isset($_POST["bloodgroup"]) && isset($_POST["stock"]) && isset($_POST["stock_id"])) {
-    // Form Variables
     $bloodgroup = $_POST["bloodgroup"];
     $stock = $_POST["stock"];
     $stock_id = $_POST["stock_id"];
 
-    // validation
-    function val($data)
-    {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
-        return $data;
-    }
-
-    // Update Users table with new Values
+    // Validation: stock must be non-negative
     if ($stock >= 0) {
-        $sql = "UPDATE stock SET bloodgroup='$bloodgroup', stock='$stock' WHERE stock_id='$stock_id'";
+        // Prepare statement to update stock
+        $stmt = $mysqli->prepare("UPDATE stock SET unit = ? WHERE stock_id = ?");
+        $stmt->bind_param("ii", $stock, $stock_id);
 
-        // Readirect to main page
-        if ($mysqli->query($sql) === TRUE) {
-            header("location:adminstock.php?message=success&stock_id=" . $stock_id);
+        if ($stmt->execute()) {
+            header("location:adminstock.php?message=success&stock_id=" . urlencode($stock_id));
+            exit;
         } else {
             echo "Error updating record " . $mysqli->error;
         }
+        $stmt->close();
     } else {
-
         echo "Stock value cannot be less than zero.";
     }
 } else {

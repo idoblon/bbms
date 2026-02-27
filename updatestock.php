@@ -10,21 +10,24 @@ if ($mysqli->connect_error) {
     die("Connection Failed " . $mysqli->connect_error);
 }
 
-$stock_id = $_GET["stock_id"];
+$stock_id = $_GET["stock_id"] ?? '';
 
-$sql = "SELECT * FROM stock WHERE stock_id='$stock_id'";
-$result = $mysqli->query($sql);
+// Prepare statement to prevent SQL injection
+$stmt = $mysqli->prepare("SELECT stock_id, bloodgroup, unit FROM stock WHERE stock_id = ?");
+$stmt->bind_param("i", $stock_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    // output data of each row
-    while ($row = $result->fetch_assoc()) {
-        $stock_id = $row["stock_id"];
-        $bloodgroup = $row["bloodgroup"];
-        $stock = $row["stock"];
-    }
+    $row = $result->fetch_assoc();
+    $stock_id = $row["stock_id"];
+    $bloodgroup = $row["bloodgroup"];
+    $unit = $row["unit"];
 } else {
     echo "0 results";
+    exit;
 }
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -126,22 +129,23 @@ if ($result->num_rows > 0) {
                             <label for="bloodgroup">Blood Group</label>
                         </div>
                         <div class="form-group col-md-6">
-                            <input id="bloodgroup" name="bloodgroup" class="form-control" value="<?php echo $bloodgroup; ?>">
+                            <input id="bloodgroup" name="bloodgroup" class="form-control" value="<?php echo htmlspecialchars($bloodgroup); ?>" readonly>
 
                         </div>
 
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="stock">stock</label>
+                            <label for="stock">Unit</label>
                         </div>
                         <div class="form-group col-md-6">
-                            <input type="text" class="form-control" id="stock" name="stock" value="<?php echo $stock; ?>">
+                            <input type="text" class="form-control" id="stock" name="stock" value="<?php echo htmlspecialchars($unit); ?>">
                         </div>
                     </div>
                     <input type="submit" value="Update">
 
-                    <input type="hidden" name="stock_id" id="stock_id" value="<?php echo $stock_id ?>">
+                    <input type="hidden" name="stock_id" id="stock_id" value="<?php echo htmlspecialchars($stock_id) ?>">
+                    <input type="hidden" name="bloodgroup" id="bloodgroup" value="<?php echo htmlspecialchars($bloodgroup) ?>">
                 </form>
             </div>
 
