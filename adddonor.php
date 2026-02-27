@@ -13,14 +13,14 @@ if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-// Escape user inputs for security
-$donor_name = $mysqli->real_escape_string($_POST['donor_name']);
-$bloodgroup = $mysqli->real_escape_string($_POST['bloodgroup']);
-$mobile_no = $mysqli->real_escape_string($_POST['mobile_no']);
-$age = $mysqli->real_escape_string($_POST['age']);
-$gender = $mysqli->real_escape_string($_POST['gender']);
-$city = $mysqli->real_escape_string($_POST['city']);
-$address = $mysqli->real_escape_string($_POST['address']);
+// Get user inputs
+$donor_name = $_POST['donor_name'] ?? '';
+$bloodgroup = $_POST['bloodgroup'] ?? '';
+$mobile_no = $_POST['mobile_no'] ?? '';
+$age = $_POST['age'] ?? '';
+$gender = $_POST['gender'] ?? '';
+$city = $_POST['city'] ?? '';
+$address = $_POST['address'] ?? '';
 
 // Validate input
 if (strlen($donor_name) < 2) {
@@ -30,26 +30,32 @@ if (strlen($donor_name) < 2) {
 } elseif (strlen($mobile_no) < 10) {
     echo 'mob';
 } else {
+    // Begin transaction
+    $mysqli->begin_transaction();
     
-    // SQL to insert values
-    $query = "INSERT INTO donors(donor_name, mobile_no, bloodgroup, age, gender, city, address) 
-              VALUES ('$donor_name','$mobile_no','$bloodgroup','$age','$gender','$city','$address')";
+    try {
+        // Insert donor using prepared statement
+        $query = "INSERT INTO donors(donor_name, mobile_no, bloodgroup, age, gender, city, address) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("sssssss", $donor_name, $mobile_no, $bloodgroup, $age, $gender, $city, $address);
+        $stmt->execute();
+        $stmt->close();
 
-    // SQL to update stock
-    $sql = "UPDATE stock SET unit = unit + 1 WHERE bloodgroup = '$bloodgroup'";
+        // Update stock using prepared statement
+        $sql = "UPDATE stock SET unit = unit + 1 WHERE bloodgroup = ?";
+        $stmt2 = $mysqli->prepare($sql);
+        $stmt2->bind_param("s", $bloodgroup);
+        $stmt2->execute();
+        $stmt2->close();
 
-    // Execute queries
-    $insert_row = $mysqli->query($query);
-    $update_stock = $mysqli->query($sql);
-
-    if ($insert_row && $update_stock) {
+        // Commit transaction
+        $mysqli->commit();
         echo "true";
-    } else {
-        if (!$insert_row) {
-            echo "Error with INSERT query: " . $mysqli->error;
-        } elseif (!$update_stock) {
-            echo "Error with UPDATE query: " . $mysqli->error;
-        }
+    } catch (Exception $e) {
+        // Rollback on error
+        $mysqli->rollback();
+        echo "Error: " . $e->getMessage();
     }
 }
 

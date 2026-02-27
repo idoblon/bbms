@@ -144,9 +144,13 @@ if (isset($_SESSION['login'])) {
             // targetting the id or name  search from the input 
             if (isset($_POST['search'])) {
                 $bloodgroup = $_POST['bloodgroup'];
-                // send find query to data to look for bloodgroup from donors
-                $query = "SELECT * FROM donors WHERE bloodgroup='$bloodgroup'";
-                $result = $mysqli->query($query);
+                // Prepare statement to prevent SQL injection
+                $query = "SELECT donor_name, bloodgroup, age, gender, address, city FROM donors WHERE bloodgroup = ?";
+                $stmt = $mysqli->prepare($query);
+                $stmt->bind_param("s", $bloodgroup);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
                 // showing the result after quering to databse 
                 echo "<div class='table-responsive'>";
                 echo "<table class='table table-hover' border='1'>
@@ -163,14 +167,14 @@ if (isset($_SESSION['login'])) {
 
                 if ($result->num_rows > 0) {
                     echo "<tbody>";
-                    while ($row = mysqli_fetch_array($result)) {
+                    while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $row['donor_name'] . "</td>";
-                        echo "<td>" . $row['bloodgroup'] . "</td>";
-                        echo "<td>" . $row['age'] . "</td>";
-                        echo "<td>" . $row['gender'] . "</td>";
-                        echo "<td>" . $row['address'] . "</td>";
-                        echo "<td>" . $row['city'] . "</td> ";
+                        echo "<td>" . htmlspecialchars($row['donor_name']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['bloodgroup']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['age']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['address']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['city']) . "</td> ";
                         echo "</tr>";
                     }
                     echo "</tbody>";
@@ -179,6 +183,7 @@ if (isset($_SESSION['login'])) {
                     echo "0 Results";
                 }
                 echo "</div>";
+                $stmt->close();
             }
             ?>
 
