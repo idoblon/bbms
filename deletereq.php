@@ -11,15 +11,17 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$req_id = $_GET["req_id"];
+$req_id = $_GET["req_id"] ?? '';
 
-// sql to delete a record
-$sql = "DELETE FROM request WHERE req_id='$req_id'";
+// Prepare statement to delete record
+$stmt = $conn->prepare("DELETE FROM request WHERE req_id = ?");
+$stmt->bind_param("i", $req_id);
 
-if ($conn->query($sql) === TRUE) {
+if ($stmt->execute()) {
     echo "Record deleted successfully";
 } else {
     echo "Error deleting record: " . $conn->error;
 }
 
+$stmt->close();
 $conn->close();

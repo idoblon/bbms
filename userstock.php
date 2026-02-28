@@ -237,13 +237,13 @@ if (isset($_SESSION['login'])) {
 
                     if ($result->num_rows > 0) {
                         echo "<tbody>";
-                        while ($row = mysqli_fetch_array($result)) {
+                        while ($row = $result->fetch_assoc()) {
                             echo "<tr>";
-                            echo "<td>" . $row['bloodgroup'] . "</td>";
-                            echo "<td>" . $row['stock'] . "</td>";
+                            echo "<td>" . htmlspecialchars($row['bloodgroup']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['unit']) . "</td>";
                             echo "</tr>";
                         }
-                        echo "<tbody";
+                        echo "</tbody>";
                     }
                     echo "</table>";
                     echo "</div>";
@@ -256,7 +256,7 @@ if (isset($_SESSION['login'])) {
                         <div class="row">
                             <div class="form-group col-lg-12">
                                 <label class="lb">Name</label>
-                                <input type="text" id="name" name="name" <?php echo "value='" . $fname . "'" ?> maxlength="30" class="form-control">
+                                <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($fname); ?>" maxlength="30" class="form-control">
                             </div>
                             <div class="form-group col-lg-12">
                                 <label class="lb">Blood Group</label>
@@ -266,10 +266,10 @@ if (isset($_SESSION['login'])) {
                                     <option value="A negative">A-</option>
                                     <option value="B positive">B+</option>
                                     <option value="B negative">B-</option>
-                                    <option value="AB positive">O+</option>
-                                    <option value="AB negative">O-</option>
-                                    <option value="O positive">AB+</option>
-                                    <option value="O negative">AB-</option>
+                                    <option value="O positive">O+</option>
+                                    <option value="O negative">O-</option>
+                                    <option value="AB positive">AB+</option>
+                                    <option value="AB negative">AB-</option>
                                 </select>
                             </div>
                             <div class="form-group col-lg-12">
@@ -288,8 +288,10 @@ if (isset($_SESSION['login'])) {
                 </div>
             </div>
             <?php
-            $query = "SELECT * FROM request WHERE email='" . $email . "'";
-            $result = $mysqli->query($query);
+            $stmt = $mysqli->prepare("SELECT name, bloodgroup, mobile_no, requested_amount, received FROM request WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
             echo "<div class='table-responsive'>";
             echo "<h1>Stock</h1>";
             echo "<table class='table table-hover' border='1'>
@@ -306,14 +308,14 @@ if (isset($_SESSION['login'])) {
             if ($result->num_rows > 0) {
                 echo "<h1>Your Request</h1>";
                 echo "<tbody>";
-                while ($row = mysqli_fetch_array($result)) {
+                while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                    echo "<td>" . $row['name'] . "</td>";
-                    echo "<td>" . $row['bloodgroup'] . "</td>";
-                    echo "<td>" . $row['mobile_no'] . "</td>";
-                    echo "<td>" . $row['requested_amount'] . "</td>";
+                    echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['bloodgroup']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['mobile_no']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['requested_amount']) . "</td>";
                     $status = $row['received'] == 1 ? 'approved' : 'Pending';
-                    echo "<td>" . $status . "</td>";
+                    echo "<td>" . htmlspecialchars($status) . "</td>";
             
                     // Display the message if received is true
                     if ($row['received'] == 1) {
@@ -325,6 +327,7 @@ if (isset($_SESSION['login'])) {
             } else {
                 echo "<h1>No Request</h1>";
             }
+            $stmt->close();
             echo "</table>";
             echo "</div>";
             ?>

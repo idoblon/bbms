@@ -141,11 +141,11 @@ $result = $mysqli->query($sql);
                     while ($row = $result->fetch_assoc()) {
                 ?>
                         <tr>
-                            <td><?php echo $row["stock_id"]; ?></td>
-                            <td><?php echo $row["bloodgroup"]; ?></td>
-                            <td><?php echo $row["unit"]; ?></td>
+                            <td><?php echo htmlspecialchars($row["stock_id"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["bloodgroup"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["unit"]); ?></td>
                             <!-- update the stock if user / admin click on update  -->
-                            <td><a class="btn btn-primary rounded-pill" href="updatestock.php?stock_id=<?php echo $row["stock_id"] ?>">Update</a></td>
+                            <td><a class="btn btn-primary rounded-pill" href="updatestock.php?stock_id=<?php echo urlencode($row["stock_id"]) ?>">Update</a></td>
                         </tr>
 
                     <?php

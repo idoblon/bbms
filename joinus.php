@@ -224,10 +224,10 @@ if (isset($_SESSION['login'])) {
                                     <option value="A negative">A-</option>
                                     <option value="B positive">B+</option>
                                     <option value="B negative">B-</option>
-                                    <option value="AB positive">O+</option>
-                                    <option value="AB negative">O-</option>
-                                    <option value="O positive">AB+</option>
-                                    <option value="O negative">AB-</option>
+                                    <option value="O positive">O+</option>
+                                    <option value="O negative">O-</option>
+                                    <option value="AB positive">AB+</option>
+                                    <option value="AB negative">AB-</option>
                                 </select>
                             </div>
 

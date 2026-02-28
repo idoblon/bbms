@@ -10,38 +10,26 @@ if ($mysqli->connect_error) {
     die("Connection Failed " . $mysqli->connect_error);
 }
 
-// Form Variables
-$donor_name = val($_POST["donor_name"]);
-$mobile_no = val($_POST["mobile_no"]);
-$bloodgroup = val($_POST["bloodgroup"]);
-$age = val($_POST["age"]);
-$gender = val($_POST["gender"]);
-$address = val($_POST["address"]);
-$city = val($_POST["city"]);
-$donor_id = val($_POST["donor_id"]);
+// Get form variables
+$donor_name = $_POST["donor_name"] ?? '';
+$mobile_no = $_POST["mobile_no"] ?? '';
+$bloodgroup = $_POST["bloodgroup"] ?? '';
+$age = $_POST["age"] ?? '';
+$gender = $_POST["gender"] ?? '';
+$address = $_POST["address"] ?? '';
+$city = $_POST["city"] ?? '';
+$donor_id = $_POST["donor_id"] ?? '';
 
-// validation
+// Prepare statement to update donor
+$stmt = $mysqli->prepare("UPDATE donors SET donor_name = ?, mobile_no = ?, bloodgroup = ?, age = ?, gender = ?, address = ?, city = ? WHERE donor_id = ?");
+$stmt->bind_param("sssisssi", $donor_name, $mobile_no, $bloodgroup, $age, $gender, $address, $city, $donor_id);
 
-function val($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-
-
-
-
-// Update Users table with new Values
-$sql = "UPDATE donors SET donor_name='$donor_name', mobile_no='$mobile_no', bloodgroup='$bloodgroup', age='$age', gender='$gender', address='$address' WHERE donor_id='$donor_id'";
-
-// Readirect to main page
-if ($mysqli->query($sql) === TRUE) {
-    header("location:updatea.php?message=success&id=" . $donor_id);
+if ($stmt->execute()) {
+    header("location:updatea.php?message=success&id=" . urlencode($donor_id));
+    exit;
 } else {
     echo "Error updating record " . $mysqli->error;
 }
 
-
+$stmt->close();
 $mysqli->close();

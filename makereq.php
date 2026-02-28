@@ -13,13 +13,12 @@ if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-// Prepare and sanitize inputs
-$name = $mysqli->real_escape_string($_POST['name']);
-$bloodgroup = $mysqli->real_escape_string($_POST['bloodgroup']);
-$mobile_no = $mysqli->real_escape_string($_POST['mobile_no']);
-$requested_amount = $mysqli->real_escape_string($_POST['requested_amount']);
-$received = 0;
-$email = $_SESSION['email'];
+// Get inputs
+$name = $_POST['name'] ?? '';
+$bloodgroup = $_POST['bloodgroup'] ?? '';
+$mobile_no = $_POST['mobile_no'] ?? '';
+$requested_amount = $_POST['requested_amount'] ?? '';
+$email = $_SESSION['email'] ?? '';
 
 // Validate inputs
 if (strlen($name) < 2) {
@@ -29,15 +28,16 @@ if (strlen($name) < 2) {
 } elseif (strlen($mobile_no) < 10) {
     echo 'Invalid mobile number: Mobile number should be at least 10 digits.';
 } else {
-    // Prepare the SQL statement
-    $query = "INSERT INTO request (name, bloodgroup, mobile_no, email, received, requested_amount) VALUES ('$name', '$bloodgroup', '$mobile_no', '$email', '$received', '$requested_amount')";
+    // Prepare statement
+    $stmt = $mysqli->prepare("INSERT INTO request (name, bloodgroup, mobile_no, email, received, requested_amount) VALUES (?, ?, ?, ?, 0, ?)");
+    $stmt->bind_param("ssssd", $name, $bloodgroup, $mobile_no, $email, $requested_amount);
 
-    // Execute the query and check for errors
-    if ($mysqli->query($query) === TRUE) {
+    if ($stmt->execute()) {
         echo 'true';
     } else {
-        echo 'Error: ' . $query . '<br>' . $mysqli->error;
+        echo 'Error: ' . $mysqli->error;
     }
+    $stmt->close();
 }
 
 // Close the connection

@@ -63,15 +63,15 @@ $result = $mysqli->query($sql);
                     while ($row = $result->fetch_assoc()) {
                 ?>
                         <tr>
-                            <td><?php echo $row["donor_id"]; ?></td>
-                            <td><?php echo $row["donor_name"]; ?></td>
-                            <td><?php echo $row["mobile_no"]; ?></td>
-                            <td><?php echo $row["bloodgroup"]; ?></td>
-                            <td><?php echo $row["age"]; ?></td>
-                            <td><?php echo $row["gender"]; ?></td>
-                            <td><?php echo $row["address"]; ?></td>
-                            <td><?php echo $row["city"]; ?></td>
-                            <td><a class="btn btn-primary rounded-pill" href="updateuser.php?donor_id=<?php echo $row["donor_id"] ?>">Update</a></td>
+                            <td><?php echo htmlspecialchars($row["donor_id"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["donor_name"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["mobile_no"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["bloodgroup"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["age"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["gender"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["address"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["city"]); ?></td>
+                            <td><a class="btn btn-primary rounded-pill" href="updateuser.php?donor_id=<?php echo urlencode($row["donor_id"]) ?>">Update</a></td>
                         </tr>
 
                     <?php
