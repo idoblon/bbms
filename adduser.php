@@ -1,23 +1,15 @@
 <?php
-session_start();
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "blood-bank";
+require_once 'config.php';
+require_once 'session.php';
+require_once 'helpers.php';
 
-// Create connection
-$mysqli = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+$mysqli = getDBConnection();
 
 // Extract user input
-$fname = $_POST['fname'] ?? '';
-$lname = $_POST['lname'] ?? '';
-$email = $_POST['email'] ?? '';
-$input_password = $_POST['password'] ?? '';
+$fname = sanitizeString(getPost('fname'));
+$lname = sanitizeString(getPost('lname'));
+$email = sanitizeEmail(getPost('email'));
+$input_password = getPost('password');
 
 // Validate user input
 if (strlen($fname) < 2) {
@@ -26,7 +18,7 @@ if (strlen($fname) < 2) {
     echo 'lname';
 } elseif (strlen($email) <= 4) {
     echo 'eshort';
-} elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+} elseif (!validateEmail($email)) {
     echo 'eformat';
 } elseif (strlen($input_password) < 4) {
     echo 'pshort';

@@ -1,20 +1,13 @@
 <?php
-session_start();
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "blood-bank";
+require_once 'config.php';
+require_once 'session.php';
+require_once 'helpers.php';
 
-// Create connection
-$mysqli = new mysqli($servername, $username, $password, $dbname);
-
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+$mysqli = getDBConnection();
 
 // Get user input
-$email = $_POST['email'] ?? '';
-$input_password = $_POST['password'] ?? '';
+$email = sanitizeEmail(getPost('email'));
+$input_password = getPost('password');
 
 // Prepare and execute SQL statement
 $query = "SELECT mem_id, fname, lname, email, password FROM members WHERE email = ?";
