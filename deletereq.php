@@ -1,17 +1,10 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "blood-bank";
+require_once 'config.php';
+require_once 'helpers.php';
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$conn = getDBConnection();
 
-$req_id = $_GET["req_id"] ?? '';
+$req_id = sanitizeInt(getGet('req_id'));
 
 // Prepare statement to delete record
 $stmt = $conn->prepare("DELETE FROM request WHERE req_id = ?");

@@ -1,33 +1,25 @@
 <?php
-session_start();
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "blood-bank";
+require_once 'config.php';
+require_once 'session.php';
+require_once 'helpers.php';
 
-// Create connection
-$mysqli = new mysqli($servername, $username, $password, $dbname);
+$mysqli = getDBConnection();
 
-// Check connection
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
-
-// Get user inputs
-$donor_name = $_POST['donor_name'] ?? '';
-$bloodgroup = $_POST['bloodgroup'] ?? '';
-$mobile_no = $_POST['mobile_no'] ?? '';
-$age = $_POST['age'] ?? '';
-$gender = $_POST['gender'] ?? '';
-$city = $_POST['city'] ?? '';
-$address = $_POST['address'] ?? '';
+// Get and sanitize user inputs
+$donor_name = sanitizeString(getPost('donor_name'));
+$bloodgroup = getPost('bloodgroup');
+$mobile_no = getPost('mobile_no');
+$age = sanitizeInt(getPost('age'));
+$gender = getPost('gender');
+$city = sanitizeString(getPost('city'));
+$address = sanitizeString(getPost('address'));
 
 // Validate input
 if (strlen($donor_name) < 2) {
     echo 'name';
-} elseif (strlen($bloodgroup) <= 3) {
+} elseif (!validateBloodGroup($bloodgroup)) {
     echo 'bg';
-} elseif (strlen($mobile_no) < 10) {
+} elseif (!validatePhone($mobile_no)) {
     echo 'mob';
 } else {
     // Begin transaction

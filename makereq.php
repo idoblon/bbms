@@ -1,31 +1,23 @@
 <?php
-session_start();
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "blood-bank";
+require_once 'config.php';
+require_once 'session.php';
+require_once 'helpers.php';
 
-// Create connection
-$mysqli = new mysqli($servername, $username, $password, $dbname);
+$mysqli = getDBConnection();
 
-// Check connection
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
-
-// Get inputs
-$name = $_POST['name'] ?? '';
-$bloodgroup = $_POST['bloodgroup'] ?? '';
-$mobile_no = $_POST['mobile_no'] ?? '';
-$requested_amount = $_POST['requested_amount'] ?? '';
+// Get and sanitize inputs
+$name = sanitizeString(getPost('name'));
+$bloodgroup = getPost('bloodgroup');
+$mobile_no = getPost('mobile_no');
+$requested_amount = sanitizeInt(getPost('requested_amount'));
 $email = $_SESSION['email'] ?? '';
 
 // Validate inputs
 if (strlen($name) < 2) {
     echo 'Invalid name: Name should be at least 2 characters long.';
-} elseif (strlen($bloodgroup) <= 3) {
+} elseif (!validateBloodGroup($bloodgroup)) {
     echo 'Invalid blood group: Blood group should be valid.';
-} elseif (strlen($mobile_no) < 10) {
+} elseif (!validatePhone($mobile_no)) {
     echo 'Invalid mobile number: Mobile number should be at least 10 digits.';
 } else {
     // Prepare statement

@@ -1,25 +1,15 @@
 <?php
+require_once 'config.php';
+require_once 'session.php';
+require_once 'helpers.php';
 
-session_start();
-// session checking and connection to database 
-if (isset($_SESSION['login'])) {
-    $fname = $_SESSION['fname'];
-    $lname = $_SESSION['lname'];
+requireLogin();
 
+$fname = $_SESSION['fname'];
+$lname = $_SESSION['lname'];
+
+$mysqli = getDBConnection();
 ?>
-    <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $db = "blood-bank";
-    // databse connection 
-    $mysqli = new mysqli($servername, $username, $password, $db);
-    // error handling
-    if ($mysqli->connect_error) {
-        die("Connection Failed " . $mysqli->connect_error);
-    }
-
-    ?>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -141,49 +131,53 @@ if (isset($_SESSION['login'])) {
             </form>
 
             <?php
-            // targetting the id or name  search from the input 
             if (isset($_POST['search'])) {
-                $bloodgroup = $_POST['bloodgroup'];
-                // Prepare statement to prevent SQL injection
-                $query = "SELECT donor_name, bloodgroup, age, gender, address, city FROM donors WHERE bloodgroup = ?";
-                $stmt = $mysqli->prepare($query);
-                $stmt->bind_param("s", $bloodgroup);
-                $stmt->execute();
-                $result = $stmt->get_result();
+                $bloodgroup = getPost('bloodgroup');
                 
-                // showing the result after quering to databse 
-                echo "<div class='table-responsive'>";
-                echo "<table class='table table-hover' border='1'>
-                    <thead>
-                        <tr>
-                        <th scope='col'>Donor's Name</th>
-                        <th scope='col'>Blood Group</th>
-                        <th scope='col'>Donor's Age</th>
-                        <th scope='col'>Gender</th>
-                        <th scope='col'>Address</th>
-                        <th scope='col'>City</th>
-                    </thead>
-                    </tr>";
+                if (validateBloodGroup($bloodgroup)) {
+                    // Prepare statement to prevent SQL injection
+                    $query = "SELECT donor_name, bloodgroup, age, gender, address, city FROM donors WHERE bloodgroup = ?";
+                    $stmt = $mysqli->prepare($query);
+                    $stmt->bind_param("s", $bloodgroup);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    // showing the result after quering to databse 
+                    echo "<div class='table-responsive'>";
+                    echo "<table class='table table-hover' border='1'>
+                        <thead>
+                            <tr>
+                            <th scope='col'>Donor's Name</th>
+                            <th scope='col'>Blood Group</th>
+                            <th scope='col'>Donor's Age</th>
+                            <th scope='col'>Gender</th>
+                            <th scope='col'>Address</th>
+                            <th scope='col'>City</th>
+                        </thead>
+                        </tr>";
 
-                if ($result->num_rows > 0) {
-                    echo "<tbody>";
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . htmlspecialchars($row['donor_name']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['bloodgroup']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['age']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['address']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['city']) . "</td> ";
-                        echo "</tr>";
+                    if ($result->num_rows > 0) {
+                        echo "<tbody>";
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($row['donor_name']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['bloodgroup']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['age']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['address']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['city']) . "</td> ";
+                            echo "</tr>";
+                        }
+                        echo "</tbody>";
+                        echo "</table>";
+                    } else {
+                        echo "0 Results";
                     }
-                    echo "</tbody>";
-                    echo "</table>";
+                    echo "</div>";
+                    $stmt->close();
                 } else {
-                    echo "0 Results";
+                    echo "<div class='alert alert-danger'>Invalid blood group selected</div>";
                 }
-                echo "</div>";
-                $stmt->close();
             }
             ?>
 
@@ -193,12 +187,3 @@ if (isset($_SESSION['login'])) {
     </body>
 
     </html>
-
-<?php
-
-} else {
-    // homepage redirection 
-    header("location:index.php");
-}
-
-?>
